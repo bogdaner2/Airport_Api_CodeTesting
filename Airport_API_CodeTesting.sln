@@ -4,6 +4,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airport_API_CodeTesting", "Airport_API_CodeTesting\Airport_API_CodeTesting.csproj", "{CEF027B9-439D-4894-9E4E-10A2170A1C41}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4799D53E-62EC-4F6C-8D6C-06F1978D72D9} = {4799D53E-62EC-4F6C-8D6C-06F1978D72D9}
+		{AC159969-CAD7-4311-BFA6-9024A23B38B8} = {AC159969-CAD7-4311-BFA6-9024A23B38B8}
+		{5B721B85-F474-49CB-B346-1015C2FD99E9} = {5B721B85-F474-49CB-B346-1015C2FD99E9}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airport_REST_API.Tests", "Airport_REST_API.Tests\Airport_REST_API.Tests.csproj", "{64A7E32F-AF45-410B-AE3E-991D42F610DC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Airport_REST_API.Services", "Airport_REST_API.Services\Airport_REST_API.Services.csproj", "{AC159969-CAD7-4311-BFA6-9024A23B38B8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Airport_REST_API.Shared", "Airport_REST_API.Shared\Airport_REST_API.Shared.csproj", "{5B721B85-F474-49CB-B346-1015C2FD99E9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Airport_REST_API.DataAccess", "Airport_REST_API.DataAccess\Airport_REST_API.DataAccess.csproj", "{4799D53E-62EC-4F6C-8D6C-06F1978D72D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +28,22 @@ Global
 		{CEF027B9-439D-4894-9E4E-10A2170A1C41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEF027B9-439D-4894-9E4E-10A2170A1C41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEF027B9-439D-4894-9E4E-10A2170A1C41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64A7E32F-AF45-410B-AE3E-991D42F610DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64A7E32F-AF45-410B-AE3E-991D42F610DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64A7E32F-AF45-410B-AE3E-991D42F610DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64A7E32F-AF45-410B-AE3E-991D42F610DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC159969-CAD7-4311-BFA6-9024A23B38B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC159969-CAD7-4311-BFA6-9024A23B38B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC159969-CAD7-4311-BFA6-9024A23B38B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC159969-CAD7-4311-BFA6-9024A23B38B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B721B85-F474-49CB-B346-1015C2FD99E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B721B85-F474-49CB-B346-1015C2FD99E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B721B85-F474-49CB-B346-1015C2FD99E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B721B85-F474-49CB-B346-1015C2FD99E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4799D53E-62EC-4F6C-8D6C-06F1978D72D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4799D53E-62EC-4F6C-8D6C-06F1978D72D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4799D53E-62EC-4F6C-8D6C-06F1978D72D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4799D53E-62EC-4F6C-8D6C-06F1978D72D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
