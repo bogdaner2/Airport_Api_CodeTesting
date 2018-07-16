@@ -35,12 +35,10 @@ namespace Airport_API_CodeTesting
             services.AddTransient<IStewardessService, StewardessService>();
             services.AddTransient<IPilotService, PilotService>();
             services.AddTransient<IDepartureService,DepartureService>();
-            services.AddSingleton<IUnitOfWork,UnitOfWork>();
             services.AddScoped<UnitOfWork>();
             var mapper = MapperConfiguration().CreateMapper();
             services.AddSingleton(_ => mapper);
-            var connection = @"Server=(localdb)\mssqllocaldb;Database=AirportDB;Trusted_Connection=True;ConnectRetryCount=0";
-            services.AddDbContext<AirportContext>(options => options.UseSqlServer(connection));
+            services.AddDbContext<AirportContext>(options => options.UseSqlServer(Configuration.GetSection("Connection").Value));
             services.AddTransient<DataInitializer>();
             services.AddMvc();
         }

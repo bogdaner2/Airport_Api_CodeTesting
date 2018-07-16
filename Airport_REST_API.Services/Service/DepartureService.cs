@@ -10,10 +10,10 @@ namespace Airport_REST_API.Services.Service
 {
     public class DepartureService : IDepartureService
     {
-        private readonly UnitOfWork db;
+        private readonly IUnitOfWork db;
         private readonly IMapper _mapper;
 
-        public DepartureService(UnitOfWork uof,IMapper mapper)
+        public DepartureService(IUnitOfWork uof,IMapper mapper)
         {
             db = uof;
             _mapper = mapper;
