@@ -31,8 +31,6 @@ namespace Airport_REST_API.Tests
             mockUoW.Setup(m => m.Tickets).Returns(ticketRepository.Object);
             service = new TicketService(mockUoW.Object, mapper.Object);
         }
-
-
         [Test]
         public void Service_Should_ReturnFalse_When_UpdateNoExistingObject()
         {
@@ -46,17 +44,18 @@ namespace Airport_REST_API.Tests
             //Assert
             Assert.True(result == false);
         }
-
         [Test]
         public void ReturnSave()
         {
+            //Act
             service.Add(new TicketDTO());
+            //Assert
             mockUoW.Verify(x => x.Save());
         }
-
         [Test]
-        public void GetCollection_Test()
+        public void GetMappedCollection_Test()
         {
+            //Arrange
             List<Ticket> tickets = new List<Ticket>
             {
                 new Ticket {Id = 1,Number = "AAABRT",Price = 100},
@@ -64,10 +63,14 @@ namespace Airport_REST_API.Tests
                 new Ticket {Id = 3,Number = "AAABR2",Price = 180},
             };
             mockUoW.Setup(x => x.Tickets.GetAll()).Returns(tickets);
-
+            var serviceWithMapper = new TicketService(mockUoW.Object, new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<TicketDTO, Ticket>()
+                    .ForMember(x => x.Id, opt => opt.Ignore());
+                cfg.CreateMap<Ticket, TicketDTO>();
+            }).CreateMapper());
             // Act
-            var result = service.GetCollection();
-
+            var result = serviceWithMapper.GetCollection();
             // Assert
             Assert.AreEqual(tickets.Count,result.ToList().Count);
         }
@@ -75,13 +78,20 @@ namespace Airport_REST_API.Tests
         public void GetTicketById_WithNegativeId_ShouldReturnNull()
         {
             // Arrange
-            mockUoW.Setup(x => x.Tickets.Get(It.Is<int>(y => y < 0))).Returns((Ticket)null);
-
+            mockUoW.Setup(x => x.Tickets.Get(It.Is<int>(i => i < 0))).Returns((Ticket)null);
             // Act
             var result = service.GetObject(-10);
-
             // Assert
             Assert.IsNull(result);
+        }
+
+        [TearDown]
+        public void Deinitialize()
+        {
+            ticketRepository = null;
+            mockUoW = null;
+            mapper = null;
+            service = null;
         }
 
     }
