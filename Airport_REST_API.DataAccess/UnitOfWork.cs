@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Airport_REST_API.DataAccess.Models;
 using Airport_REST_API.DataAccess.Repositories;
 
 namespace Airport_REST_API.DataAccess
@@ -8,21 +9,21 @@ namespace Airport_REST_API.DataAccess
     public class UnitOfWork : IUnitOfWork
     {
         private AirportContext db;
-        private TicketRepository _ticketRepository;
-        private AircraftRepository _aircraftRepository;
-        private AircraftTypeRepository _typeRepository;
-        private CrewRepository _crewRepository;
-        private StewardessRepository _stewardessRepository;
-        private PilotRepository _pilotRepository;
-        private DepartureRepository _departureRepository;
-        private FlightRepository _flightRepository;
+        private IRepository<Ticket> _ticketRepository;
+        private IRepository<Aircraft> _aircraftRepository;
+        private IRepository<AircraftType> _typeRepository;
+        private IRepository<Crew> _crewRepository;
+        private IRepository<Stewardess> _stewardessRepository;
+        private IRepository<Pilot> _pilotRepository;
+        private IRepository<Departures> _departureRepository;
+        private IRepository<Flight> _flightRepository;
 
         public UnitOfWork(AirportContext context)
         {
             db = context;
         }
 
-        public TicketRepository Tickets
+        public IRepository<Ticket> Tickets
         {
             get
             {
@@ -31,7 +32,7 @@ namespace Airport_REST_API.DataAccess
                 return _ticketRepository;
             }
         }
-        public AircraftRepository Aircrafts
+        public IRepository<Aircraft> Aircrafts
         {
             get
             {
@@ -40,7 +41,7 @@ namespace Airport_REST_API.DataAccess
                 return _aircraftRepository;
             }
         }
-        public AircraftTypeRepository Types
+        public IRepository<AircraftType> Types
         {
             get
             {
@@ -49,7 +50,7 @@ namespace Airport_REST_API.DataAccess
                 return _typeRepository;
             }
         }
-        public CrewRepository Crews
+        public IRepository<Crew> Crews
         {
             get
             {
@@ -58,7 +59,7 @@ namespace Airport_REST_API.DataAccess
                 return _crewRepository;
             }
         }
-        public StewardessRepository Stewardess
+        public IRepository<Stewardess> Stewardess
         {
             get
             {
@@ -67,7 +68,7 @@ namespace Airport_REST_API.DataAccess
                 return _stewardessRepository;
             }
         }
-        public PilotRepository Pilots
+        public IRepository<Pilot> Pilots
         {
             get
             {
@@ -76,7 +77,7 @@ namespace Airport_REST_API.DataAccess
                 return _pilotRepository;
             }
         }
-        public FlightRepository Flights
+        public IRepository<Flight> Flights
         {
             get
             {
@@ -85,7 +86,7 @@ namespace Airport_REST_API.DataAccess
                 return _flightRepository;
             }
         }
-        public DepartureRepository Departures
+        public IRepository<Departures> Departures
         {
             get
             {

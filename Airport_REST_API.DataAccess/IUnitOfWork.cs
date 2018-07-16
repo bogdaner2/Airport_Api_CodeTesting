@@ -1,17 +1,18 @@
-﻿using Airport_REST_API.DataAccess.Repositories;
+﻿using Airport_REST_API.DataAccess.Models;
+using Airport_REST_API.DataAccess.Repositories;
 
 namespace Airport_REST_API.DataAccess
 {
     public interface IUnitOfWork
     {
-        TicketRepository Tickets { get;}
-        AircraftRepository Aircrafts { get; }
-        AircraftTypeRepository Types { get; }
-        CrewRepository Crews { get; }
-        StewardessRepository Stewardess { get; }
-        PilotRepository Pilots { get; }
-        FlightRepository Flights { get; }
-        DepartureRepository Departures{ get;}
+        IRepository<Ticket> Tickets { get;}
+        IRepository<Aircraft> Aircrafts { get; }
+        IRepository<AircraftType> Types { get; }
+        IRepository<Crew> Crews { get; }
+        IRepository<Stewardess> Stewardess { get; }
+        IRepository<Pilot> Pilots { get; }
+        IRepository<Flight> Flights { get; }
+        IRepository<Departures> Departures { get;}
         void Save();
     }
 }

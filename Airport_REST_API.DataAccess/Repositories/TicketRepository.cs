@@ -33,7 +33,7 @@ namespace Airport_REST_API.DataAccess.Repositories
         }
         public bool UpdateObject(int id, Ticket obj)
         {
-            var flag =  db.Tickets.Count(item => item.Id == id) == 0;
+            var flag =  GetAll().Count(item => item.Id == id) == 0;
             if (flag)
                 return false;
             obj.Id = id;

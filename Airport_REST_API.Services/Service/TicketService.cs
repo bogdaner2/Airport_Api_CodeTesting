@@ -10,10 +10,10 @@ namespace Airport_REST_API.Services.Service
 {
     public class TicketService : ITicketService
     {
-        private readonly UnitOfWork db;
+        private readonly IUnitOfWork db;
         private readonly IMapper _mapper;
 
-        public TicketService(UnitOfWork uof,IMapper mapper)
+        public TicketService(IUnitOfWork uof,IMapper mapper)
         {
             db = uof;
             _mapper = mapper;
