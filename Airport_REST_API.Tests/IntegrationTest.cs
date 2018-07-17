@@ -19,19 +19,19 @@ namespace Airport_REST_API.Tests
     [TestFixture]
     public class IntegrationTest
     {
-        private TicketController controller;
-        private ITicketService service;
-        private IUnitOfWork uow;
-        private AirportContext context;
+        private TicketController _ticketController;
+        private ITicketService _ticketService;
+        private IUnitOfWork _uow;
+        private AirportContext _context;
         private IMapper _mapper;
-        private ICrewService crewSer;
-        private CrewController crewCon;
+        private ICrewService _crewService;
+        private CrewController _crewController;
         [SetUp]
         public void StartUp()
         {
             var optionsBuilder = new DbContextOptionsBuilder<AirportContext>();
             optionsBuilder.UseSqlServer(@"Server = (localdb)\mssqllocaldb; Database = AirportDB; Trusted_Connection = True; ConnectRetryCount = 0");
-            context = new AirportContext(optionsBuilder.Options);
+            _context = new AirportContext(optionsBuilder.Options);
             _mapper = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<TicketDTO, Ticket>()
@@ -46,17 +46,17 @@ namespace Airport_REST_API.Tests
                     .ForMember(i => i.PilotId, opt => opt.MapFrom(m => m.Pilot.Id));
                 cfg.CreateMap<Ticket, TicketDTO>();
             }).CreateMapper();
-            uow = new UnitOfWork(context);
-            service = new TicketService(uow,_mapper);
-            crewSer = new CrewService(uow, _mapper);
-            crewCon = new CrewController(crewSer);
-            controller = new TicketController(service);
+            _uow = new UnitOfWork(_context);
+            _ticketService = new TicketService(_uow,_mapper);
+            _crewService = new CrewService(_uow, _mapper);
+            _crewController = new CrewController(_crewService);
+            _ticketController = new TicketController(_ticketService);
         }
         [Test]
         public void Get_ReturnOkStatusCode()
         {
             //Act
-            var result = controller.GetAll() as OkObjectResult;
+            var result = _ticketController.GetAll() as OkObjectResult;
             //Assert
             Assert.True(result.StatusCode == 200);
         }      
@@ -64,7 +64,7 @@ namespace Airport_REST_API.Tests
         public void Get_Should_ReturnObject_When_IdIsCorrect()
         {
             //Act
-            var result = controller.Get(2) as OkObjectResult;
+            var result = _ticketController.Get(2) as OkObjectResult;
             //Assert
             Assert.True(result.Value != null);
         }
@@ -72,7 +72,7 @@ namespace Airport_REST_API.Tests
         public void Get_Should_ReturnObject_When_IdIsNegative()
         {
             //Act
-            var result = controller.Get(-1) as OkObjectResult;
+            var result = _ticketController.Get(-1) as OkObjectResult;
             //Assert
             Assert.True(result.Value == null);
         }
@@ -81,14 +81,14 @@ namespace Airport_REST_API.Tests
         {
             //Arrange
             var correctItem = new TicketDTO {Number = "TestAdd2", Price = 1000};
-            var initialCount = context.Tickets.ToList().Count;
+            var initialCount = _context.Tickets.ToList().Count;
             //Act
-            controller.Post(correctItem);
-            var afterCount = context.Tickets.ToList().Count;
+            _ticketController.Post(correctItem);
+            var afterCount = _context.Tickets.ToList().Count;
             //Assert
             Assert.IsFalse(initialCount == afterCount);
             //Reset
-            controller.Delete(context.Tickets.Last().Id);
+            _ticketController.Delete(_context.Tickets.Last().Id);
         }
         [Test]
         public void AddItem_ReturnOKStatus_When_ItemAdded()
@@ -96,11 +96,11 @@ namespace Airport_REST_API.Tests
             //Arrange
             var correctItem = new TicketDTO { Number = "TestAdd1", Price = 1500 };
             //Act
-            var result = controller.Post(correctItem) as StatusCodeResult;
+            var result = _ticketController.Post(correctItem) as StatusCodeResult;
             //Assert
             Assert.AreEqual(result.StatusCode,200);
             //Reset
-            controller.Delete(context.Tickets.Last().Id);
+            _ticketController.Delete(_context.Tickets.Last().Id);
         }
         [Test]
         public void CheckIgnoreID_When_CreateNewObjectFromDTO()
@@ -115,32 +115,32 @@ namespace Airport_REST_API.Tests
         [Test]
         public void Post_Return500Status_WhenModelIsInvalid()
         {
-            var result = controller.Post(new TicketDTO()) as StatusCodeResult;
+            var result = _ticketController.Post(new TicketDTO()) as StatusCodeResult;
             //Assert
             Assert.True(result.StatusCode == 500);
         }
         [Test]
         public void Remove_Return_OkStatusCode()
         {
-            controller.Post(new TicketDTO { Number = "RemoveTest", Price = 100 });
-            var lastIndex = context.Tickets.Last().Id;
+            _ticketController.Post(new TicketDTO { Number = "RemoveTest", Price = 100 });
+            var lastIndex = _context.Tickets.Last().Id;
             //Act 
-            var result = controller.Delete(lastIndex) as StatusCodeResult;
+            var result = _ticketController.Delete(lastIndex) as StatusCodeResult;
             //Assert
             Assert.True(result.StatusCode == 200);
             //Reset
-            controller.Delete(lastIndex);
+            _ticketController.Delete(lastIndex);
         }
         [Test]
         public void Remove_DecreaseCountOfSet()
         {
             //Arrange
-            controller.Post(new TicketDTO {Number = "RemoveTest", Price = 100});
-            var initialCount = context.Tickets.ToList().Count;
-            var lastIndex = context.Tickets.Last().Id;
+            _ticketController.Post(new TicketDTO {Number = "RemoveTest", Price = 100});
+            var initialCount = _context.Tickets.ToList().Count;
+            var lastIndex = _context.Tickets.Last().Id;
             //Act
-            controller.Delete(lastIndex);
-            var afterCount = context.Tickets.ToList().Count;
+            _ticketController.Delete(lastIndex);
+            var afterCount = _context.Tickets.ToList().Count;
             //Assert
             Assert.IsFalse(initialCount == afterCount);
         }
@@ -150,63 +150,64 @@ namespace Airport_REST_API.Tests
             //Arrange
             var correctItem = new CrewDTO { PilotId = 1,StewardessesId = new List<int> { 1,2}};
             //Act
-            var result = crewCon.Post(correctItem) as StatusCodeResult;
+            var result = _crewController.Post(correctItem) as StatusCodeResult;
             //Assert
             Assert.AreEqual(result.StatusCode, 200);
             //Reset
-            crewCon.Delete(context.Crews.Last().Id);
+            _crewController.Delete(_context.Crews.Last().Id);
         }
         [Test]
-        public void Remove_Return500_When_CrewWithoutStewardesses()
+        public void Post_Return500_When_CrewWithoutStewardesses()
         {
             //Arrange
             var correctItem = new CrewDTO { PilotId = 1 };
             //Act
-            var result = crewCon.Put(1,correctItem) as StatusCodeResult;
+            var result = _crewController.Put(1,correctItem) as StatusCodeResult;
             //Assert
             Assert.AreEqual(result.StatusCode, 500);
         }
-
-
         [Test]
-        public void TestInnerListAdd()
+        public void Check_That_ServiceFindStewardesses_When_GiveStewardessesId()
         {
-
+            //Arrange
+            var correctItem = new CrewDTO { PilotId = 1, StewardessesId = new List<int> { 1, 2 } };
+            //Act
+            var post = _crewController.Post(correctItem) as StatusCodeResult;
+            var result = _uow.Crews.Get(_context.Crews.Last().Id)
+                .Stewardesses
+                .Count;
+            //Assert
+            Assert.IsTrue(result != 0);
+            //Reset
+            _crewController.Delete(_context.Crews.Last().Id);
         }
-        [Test]
-        public void TestInnerListRemove()
-        {
-
-        }
-
-
         [Test]
         public void Update_Return_OkStatusCode()
         {
             var ticket = new TicketDTO {Id = 1 ,Number = "Test", Price = 1000};
-            var result = controller.Put(3,ticket);
+            var result = _ticketController.Put(3,ticket);
             Assert.AreEqual(new StatusCodeResult(200).StatusCode,((StatusCodeResult)result).StatusCode);
         }
         [Test]
         public void Update_ChangedObject_Should_NotEqualInitialObject()
         {
             //Arrange
-            var temp = uow.Tickets.Get(2);
+            var temp = _uow.Tickets.Get(2);
             var initial = new { temp.Id, temp.Number, temp.Price};
             var ticket = new TicketDTO { Number = "Test", Price = 1000 };
             //Act
-            controller.Put(2, ticket);
-            var current = uow.Tickets.Get(2);
+            _ticketController.Put(2, ticket);
+            var current = _uow.Tickets.Get(2);
             //Assert
             Assert.IsFalse(current.Number == initial.Number);
             //Reset
-            controller.Put(2, new TicketDTO { Number = initial.Number, Price = initial.Price});
+            _ticketController.Put(2, new TicketDTO { Number = initial.Number, Price = initial.Price});
         }
         [Test]
         public void ReturnFalse_When_UpdateObjectWithNegativeId()
         {
             //Act
-            var result = service.Update(-1, It.IsAny<TicketDTO>());
+            var result = _ticketService.Update(-1, It.IsAny<TicketDTO>());
             //Assert
             Assert.IsFalse(result);    
         }
@@ -214,10 +215,10 @@ namespace Airport_REST_API.Tests
         [TearDown]
         public void Reset()
         {
-            controller = null;
-            uow = null;
+            _ticketController = null;
+            _uow = null;
             _mapper = null;
-            service = null;
+            _ticketService = null;
         }
     }
 }
