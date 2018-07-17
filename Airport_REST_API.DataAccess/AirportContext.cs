@@ -5,7 +5,7 @@ namespace Airport_REST_API.DataAccess
 {
     public class AirportContext : DbContext
     {
-        public DbSet<Ticket> Tickets { get; set; }
+        public virtual DbSet<Ticket> Tickets { get; set; }
         public DbSet<Aircraft> Aircrafts { get; set; }
         public DbSet<AircraftType> AircraftTypes { get; set; }
         public DbSet<Crew> Crews { get; set; }
@@ -16,6 +16,13 @@ namespace Airport_REST_API.DataAccess
 
         public AirportContext(DbContextOptions<AirportContext> options) : base (options)
         {
+            Database.Migrate();
+            Database.EnsureCreated();
+        }
+
+        public AirportContext()
+        {
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

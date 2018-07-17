@@ -8,6 +8,7 @@ using Airport_REST_API.Services.Interfaces;
 using Airport_REST_API.Services.Service;
 using Airport_REST_API.Shared.DTO;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using NUnit.Framework;
 
@@ -34,15 +35,49 @@ namespace Airport_REST_API.Tests
         [Test]
         public void Service_Should_ReturnFalse_When_UpdateNoExistingObject()
         {
-            List<Ticket> tickets = new List<Ticket>
+            var tickets = new List<Ticket>
             {
                 new Ticket {Id = 1,Number = "AAABRT",Price = 100},
                 new Ticket {Id = 2,Number = "AABBRT",Price = 120}
-            };
-            ///
-            var result = service.Update(1, It.IsAny<TicketDTO>());
+            }.AsQueryable();
+            var mockSet = new Mock<DbSet<Ticket>>();
+            mockSet.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(tickets.Provider);
+            mockSet.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(tickets.Expression);
+            mockSet.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(tickets.ElementType);
+            mockSet.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(tickets.GetEnumerator());
+            var context = new Mock<AirportContext>();
+            context.Setup(x => x.Tickets).Returns(mockSet.Object);
+            var rep = new TicketRepository(context.Object);
+            mockUoW.Setup(x => x.Tickets).Returns(rep);
+            var result = service.Update(3, new TicketDTO());
             //Assert
             Assert.True(result == false);
+        }
+
+        [Test]
+        public void Service_AddNewItem()
+        {
+            var tickets = new List<Ticket>
+            {
+                new Ticket {Id = 1,Number = "AAABRT",Price = 100},
+                new Ticket {Id = 2,Number = "AABBRT",Price = 120}
+            }.AsQueryable();
+            var mockSet = new Mock<DbSet<Ticket>>();
+            mockSet.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(tickets.Provider);
+            mockSet.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(tickets.Expression);
+            mockSet.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(tickets.ElementType);
+            mockSet.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(tickets.GetEnumerator());
+            var context = new Mock<AirportContext>();
+            context.Setup(x => x.Tickets).Returns(mockSet.Object);
+            var rep = new Mock<TicketRepository>(context.Object);
+            rep.Setup(x => x.Add(It.IsAny<Ticket>()));
+            mockUoW.Setup(x => x.Tickets).Returns(rep.Object);
+            var result = service.Add(new TicketDTO());          
+        }
+        [Test]
+        public void Service_RemoveNewItem()
+        {
+
         }
         [Test]
         public void ReturnSave()
@@ -75,16 +110,15 @@ namespace Airport_REST_API.Tests
             Assert.AreEqual(tickets.Count,result.ToList().Count);
         }
         [Test]
-        public void GetTicketById_WithNegativeId_ShouldReturnNull()
+        public void GetTicketById_WithNegativeId_ShouldReturnEmptyObject()
         {
             // Arrange
             mockUoW.Setup(x => x.Tickets.Get(It.Is<int>(i => i < 0))).Returns((Ticket)null);
             // Act
             var result = service.GetObject(-10);
             // Assert
-            Assert.IsNull(result);
+            Assert.IsTrue(result.Price == 0 && result.Number == null && result.Id == 0);
         }
-
         [TearDown]
         public void Deinitialize()
         {

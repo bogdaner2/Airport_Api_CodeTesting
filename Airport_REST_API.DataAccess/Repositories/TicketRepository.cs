@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Airport_REST_API.DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Airport_REST_API.DataAccess.Repositories
@@ -33,11 +34,12 @@ namespace Airport_REST_API.DataAccess.Repositories
         }
         public bool UpdateObject(int id, Ticket obj)
         {
-            var flag =  GetAll().Count(item => item.Id == id) == 0;
+            var flag =  db.Tickets.Count(item => item.Id == id) == 0;
             if (flag)
-                return false;
-            obj.Id = id;
-            db.Tickets.Update(obj);
+                return false;            
+            var temp = Get(id);
+            temp.Number = obj.Number;
+            temp.Price = obj.Price;
             return true;
         }
     }
