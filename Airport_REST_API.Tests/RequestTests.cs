@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net;
 using Airport_REST_API.Shared.DTO;
 using Newtonsoft.Json;
@@ -19,6 +21,20 @@ namespace Airport_REST_API.Tests
             streamWriter.Close();
             response = (HttpWebResponse)httpRequest.GetResponse();
         }
+        public string RequestGet()
+        {
+            HttpWebRequest httpRequest = HttpWebRequest.CreateHttp("http://localhost:55820/api/ticket");
+            httpRequest.Method = "GET";
+            httpRequest.ContentType = "application/json";
+            string result;
+            using (HttpWebResponse response = (HttpWebResponse)httpRequest.GetResponse())
+            using (Stream stream = response.GetResponseStream())
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                result = reader.ReadToEnd();
+            }
+            return result;
+        }
         [Test]
         public void ValidationReturnOK_When_DTOIsCorrect()
         {
@@ -30,9 +46,12 @@ namespace Airport_REST_API.Tests
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
         [Test]
-        public void Api_Return200Status_When_ItemRemoved([Values(1)]int id)
+        public void Api_Return200Status_When_ItemRemoved()
         {
             //Arrange
+            RequstPost(new TicketDTO { Number = "TestRemove",Price = 999},out HttpWebResponse responce);
+            var id = JsonConvert.DeserializeObject<List<TicketDTO>>(RequestGet()).Last().Id;
+            //Act
             HttpWebRequest httpRequest = HttpWebRequest.CreateHttp("http://localhost:55820/api/ticket/"+id);
             httpRequest.Method = "DELETE";
             httpRequest.ContentType = "application/json";
@@ -63,17 +82,7 @@ namespace Airport_REST_API.Tests
         public void Api_Get_ReturnList()
         {
             //Arrange
-            HttpWebRequest httpRequest = HttpWebRequest.CreateHttp("http://localhost:55820/api/ticket");
-            httpRequest.Method = "GET";
-            httpRequest.ContentType = "application/json";
-            //Act
-            string result;
-            using (HttpWebResponse response = (HttpWebResponse)httpRequest.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                result = reader.ReadToEnd();
-            }
+            var result = RequestGet();
             //Assert
             Assert.IsNotNull(result);
         }
