@@ -43,11 +43,11 @@ namespace Airport_REST_API.Tests
         [Test]
         public void Get_ReturnOkStatusCode()
         {
+            //Act
             var result = controller.GetAll() as OkObjectResult;
             //Assert
             Assert.True(result.StatusCode == 200);
-        }
-        
+        }      
         [Test]
         public void Get_Should_ReturnObject_When_IdIsCorrect()
         {
@@ -67,18 +67,28 @@ namespace Airport_REST_API.Tests
         [Test]
         public void AddItem_When_InputCorrect_Than_CountIncrease()
         {
+            //Arrange
             var correctItem = new TicketDTO {Number = "TestAdd2", Price = 1000};
             var initialCount = context.Tickets.ToList().Count;
-            var step = controller.Post(correctItem);
+            //Act
+            controller.Post(correctItem);
             var afterCount = context.Tickets.ToList().Count;
+            //Assert
             Assert.IsFalse(initialCount == afterCount);
+            //Reset
+            controller.Delete(context.Tickets.Last().Id);
         }
         [Test]
         public void AddItem_ReturnOKStatus_When_ItemAdded()
         {
+            //Arrange
             var correctItem = new TicketDTO { Number = "TestAdd1", Price = 1500 };
+            //Act
             var result = controller.Post(correctItem) as StatusCodeResult;
+            //Assert
             Assert.AreEqual(result.StatusCode,200);
+            //Reset
+            controller.Delete(context.Tickets.Last().Id);
         }
         [Test]
         public void CheckIgnoreID_When_CreateNewObjectFromDTO()
@@ -91,20 +101,38 @@ namespace Airport_REST_API.Tests
             Assert.IsFalse(correctItem.Id == mapper.Id);
         }
         [Test]
+        public void Post_Return500Status_WhenModelIsInvalid()
+        {
+            var result = controller.Post(new TicketDTO()) as StatusCodeResult;
+            //Assert
+            Assert.True(result.StatusCode == 500);
+        }
+        [Test]
         public void Remove_Return_OkStatusCode()
         {
-            
+            controller.Post(new TicketDTO { Number = "RemoveTest", Price = 100 });
+            var lastIndex = context.Tickets.Last().Id;
+            //Act 
+            var result = controller.Delete(lastIndex) as StatusCodeResult;
+            //Assert
+            Assert.True(result.StatusCode == 200);
+            //Reset
+            controller.Delete(lastIndex);
         }
         [Test]
         public void Remove_DecreaseCountOfSet()
         {
+            //Arrange
             controller.Post(new TicketDTO {Number = "RemoveTest", Price = 100});
             var initialCount = context.Tickets.ToList().Count;
             var lastIndex = context.Tickets.Last().Id;
-            var step = controller.Delete(lastIndex);
+            //Act
+            controller.Delete(lastIndex);
             var afterCount = context.Tickets.ToList().Count;
+            //Assert
             Assert.IsFalse(initialCount == afterCount);
         }
+
 
         [Test]
         public void TestInner()
@@ -126,6 +154,9 @@ namespace Airport_REST_API.Tests
         {
 
         }
+
+
+
         [Test]
         public void Update_Return_OkStatusCode()
         {
@@ -134,7 +165,7 @@ namespace Airport_REST_API.Tests
             Assert.AreEqual(new StatusCodeResult(200).StatusCode,((StatusCodeResult)result).StatusCode);
         }
         [Test]
-        public void Update_ChangedObject_Shouldnt_EqualInitialObject()
+        public void Update_ChangedObject_Should_NotEqualInitialObject()
         {
             //Arrange
             var temp = uow.Tickets.Get(2);
@@ -145,9 +176,9 @@ namespace Airport_REST_API.Tests
             var current = uow.Tickets.Get(2);
             //Assert
             Assert.IsFalse(current.Number == initial.Number);
+            //Reset
             controller.Put(2, new TicketDTO { Number = initial.Number, Price = initial.Price});
         }
-
         [Test]
         public void ReturnFalse_When_UpdateObjectWithNegativeId()
         {

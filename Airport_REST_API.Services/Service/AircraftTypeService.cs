@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Airport_REST_API.DataAccess;
 using Airport_REST_API.DataAccess.Models;
 using Airport_REST_API.Services.Interfaces;
@@ -44,7 +45,14 @@ namespace Airport_REST_API.Services.Service
             if (obj != null)
             {
                 db.Types.Add(_mapper.Map<AircraftType>(obj));
-                db.Save();
+                try
+                {
+                    db.Save();
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
                 return true;
             }
             return false;

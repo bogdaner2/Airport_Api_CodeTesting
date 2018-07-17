@@ -45,6 +45,14 @@ namespace Airport_REST_API.Tests
             mockSet.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(tickets.GetEnumerator());
         }
         [Test]
+        public void ReturnSave()
+        {
+            //Act
+            service.Add(new TicketDTO());
+            //Assert
+            mockUoW.Verify(x => x.Save());
+        }
+        [Test]
         public void Service_Should_ReturnFalse_When_UpdateNoExistingObject()
         {
             var context = new Mock<AirportContext>();
@@ -54,25 +62,6 @@ namespace Airport_REST_API.Tests
             var result = service.Update(0, new TicketDTO());
             //Assert
             Assert.True(result == false);
-        }
-        [Test]
-        public void Service_ReturnFalse_When_InputNoExistingObjectId()
-        {
-            var context = new Mock<AirportContext>();
-            context.Setup(x => x.Tickets).Returns(mockSet.Object);
-            var rep = new TicketRepository(context.Object);
-            mockUoW.Setup(x => x.Tickets).Returns(rep);
-            var result = service.RemoveObject(3);
-            //Assert
-            Assert.True(result == false);
-        }
-        [Test]
-        public void ReturnSave()
-        {
-            //Act
-            service.Add(new TicketDTO());
-            //Assert
-            mockUoW.Verify(x => x.Save());
         }
         [Test]
         public void GetMappedCollection_Test()
@@ -94,7 +83,18 @@ namespace Airport_REST_API.Tests
             // Act
             var result = serviceWithMapper.GetCollection();
             // Assert
-            Assert.AreEqual(tickets.Count,result.ToList().Count);
+            Assert.AreEqual(tickets.Count, result.ToList().Count);
+        }
+        [Test]
+        public void Service_ReturnFalse_When_InputNoExistingObjectId()
+        {
+            var context = new Mock<AirportContext>();
+            context.Setup(x => x.Tickets).Returns(mockSet.Object);
+            var rep = new TicketRepository(context.Object);
+            mockUoW.Setup(x => x.Tickets).Returns(rep);
+            var result = service.RemoveObject(3);
+            //Assert
+            Assert.True(result == false);
         }
         [Test]
         public void GetTicketById_WithNegativeId_ShouldReturnEmptyObject()

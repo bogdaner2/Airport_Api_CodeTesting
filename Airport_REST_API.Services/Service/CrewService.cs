@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Airport_REST_API.DataAccess;
 using Airport_REST_API.DataAccess.Models;
@@ -52,7 +53,14 @@ namespace Airport_REST_API.Services.Service
             crew.Pilot = pilot;
             crew.Stewardesses = stewardesses;
             db.Crews.Add(crew);
-            db.Save();
+            try
+            {
+                db.Save();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
             return true;
         }
 

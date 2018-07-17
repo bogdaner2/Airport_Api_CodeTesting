@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Airport_REST_API.DataAccess.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Airport_REST_API.DataAccess.Repositories
 {
