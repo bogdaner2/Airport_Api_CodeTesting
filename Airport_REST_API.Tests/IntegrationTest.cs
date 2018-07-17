@@ -41,6 +41,14 @@ namespace Airport_REST_API.Tests
             controller = new TicketController(service);
         }
         [Test]
+        public void Get_ReturnOkStatusCode()
+        {
+            var result = controller.GetAll() as OkObjectResult;
+            //Assert
+            Assert.True(result.StatusCode == 200);
+        }
+        
+        [Test]
         public void Get_Should_ReturnObject_When_IdIsCorrect()
         {
             //Act
@@ -105,6 +113,16 @@ namespace Airport_REST_API.Tests
         }
         [Test]
         public void TestRemoveInner()
+        {
+
+        }
+        [Test]
+        public void TestInnerListAdd()
+        {
+
+        }
+        [Test]
+        public void TestInnerListRemove()
         {
 
         }

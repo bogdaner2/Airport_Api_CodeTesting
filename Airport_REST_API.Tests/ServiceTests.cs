@@ -20,7 +20,9 @@ namespace Airport_REST_API.Tests
         private Mock<IRepository<Ticket>> ticketRepository;
         private Mock<IUnitOfWork> mockUoW;
         private Mock<IMapper> mapper;
+        private Mock<DbSet<Ticket>> mockSet;
         private ITicketService service;
+        
 
         [SetUp]
         public void Initialize()
@@ -31,53 +33,38 @@ namespace Airport_REST_API.Tests
             mockUoW = new Mock<IUnitOfWork>();
             mockUoW.Setup(m => m.Tickets).Returns(ticketRepository.Object);
             service = new TicketService(mockUoW.Object, mapper.Object);
+            var tickets = new List<Ticket>
+            {
+                new Ticket {Id = 1,Number = "AAABRT",Price = 100},
+                new Ticket {Id = 2,Number = "AABBRT",Price = 120}
+            }.AsQueryable();
+            mockSet = new Mock<DbSet<Ticket>>();
+            mockSet.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(tickets.Provider);
+            mockSet.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(tickets.Expression);
+            mockSet.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(tickets.ElementType);
+            mockSet.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(tickets.GetEnumerator());
         }
         [Test]
         public void Service_Should_ReturnFalse_When_UpdateNoExistingObject()
         {
-            var tickets = new List<Ticket>
-            {
-                new Ticket {Id = 1,Number = "AAABRT",Price = 100},
-                new Ticket {Id = 2,Number = "AABBRT",Price = 120}
-            }.AsQueryable();
-            var mockSet = new Mock<DbSet<Ticket>>();
-            mockSet.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(tickets.Provider);
-            mockSet.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(tickets.Expression);
-            mockSet.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(tickets.ElementType);
-            mockSet.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(tickets.GetEnumerator());
             var context = new Mock<AirportContext>();
             context.Setup(x => x.Tickets).Returns(mockSet.Object);
             var rep = new TicketRepository(context.Object);
             mockUoW.Setup(x => x.Tickets).Returns(rep);
-            var result = service.Update(3, new TicketDTO());
+            var result = service.Update(0, new TicketDTO());
             //Assert
             Assert.True(result == false);
         }
-
         [Test]
-        public void Service_AddNewItem()
+        public void Service_ReturnFalse_When_InputNoExistingObjectId()
         {
-            var tickets = new List<Ticket>
-            {
-                new Ticket {Id = 1,Number = "AAABRT",Price = 100},
-                new Ticket {Id = 2,Number = "AABBRT",Price = 120}
-            }.AsQueryable();
-            var mockSet = new Mock<DbSet<Ticket>>();
-            mockSet.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(tickets.Provider);
-            mockSet.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(tickets.Expression);
-            mockSet.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(tickets.ElementType);
-            mockSet.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(tickets.GetEnumerator());
             var context = new Mock<AirportContext>();
             context.Setup(x => x.Tickets).Returns(mockSet.Object);
-            var rep = new Mock<TicketRepository>(context.Object);
-            rep.Setup(x => x.Add(It.IsAny<Ticket>()));
-            mockUoW.Setup(x => x.Tickets).Returns(rep.Object);
-            var result = service.Add(new TicketDTO());          
-        }
-        [Test]
-        public void Service_RemoveNewItem()
-        {
-
+            var rep = new TicketRepository(context.Object);
+            mockUoW.Setup(x => x.Tickets).Returns(rep);
+            var result = service.RemoveObject(3);
+            //Assert
+            Assert.True(result == false);
         }
         [Test]
         public void ReturnSave()
