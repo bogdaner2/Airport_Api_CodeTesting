@@ -170,14 +170,12 @@ namespace Airport_REST_API.Tests
         public void Check_That_ServiceFindStewardesses_When_GiveStewardessesId()
         {
             //Arrange
-            var correctItem = new CrewDTO { PilotId = 1, StewardessesId = new List<int> { 1, 2 } };
+            var item = new CrewDTO { PilotId = 1, StewardessesId = new List<int> { 1, 2 } };
             //Act
-            var post = _crewController.Post(correctItem) as StatusCodeResult;
-            var result = _uow.Crews.Get(_context.Crews.Last().Id)
-                .Stewardesses
-                .Count;
+            _crewController.Post(item);
+            var result = _context.Crews.OrderByDescending(c => c.Id).First().Stewardesses;
             //Assert
-            Assert.IsTrue(result != 0);
+            Assert.IsTrue(result[0] == _uow.Stewardess.Get(1) && result[1] == _uow.Stewardess.Get(2));
             //Reset
             _crewController.Delete(_context.Crews.Last().Id);
         }
