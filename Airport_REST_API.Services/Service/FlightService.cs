@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Airport_REST_API.DataAccess;
 using Airport_REST_API.DataAccess.Models;
@@ -39,19 +40,26 @@ namespace Airport_REST_API.Services.Service
 
         public bool Add(FlightDTO obj)
         {
-            var tickets = db.Tickets.GetAll().Where(i => obj.TicketsId.Contains(i.Id) == true).ToList();
+            var tickets = db.Tickets.GetAll().Where(i => obj.TicketsId?.Contains(i.Id) == true).ToList();
             if (tickets.Count == 0 || obj == null )
                 return false; 
             var flight = _mapper.Map<Flight>(obj);
             flight.Ticket = tickets;
             db.Flights.Add(flight);
-            db.Save();
+            try
+            {
+                db.Save();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
             return true;
         }
 
         public bool Update(int id, FlightDTO obj)
         {
-            var tickets = db.Tickets.GetAll().Where(i => obj.TicketsId.Contains(i.Id) == true).ToList();
+            var tickets = db.Tickets.GetAll().Where(i => obj.TicketsId?.Contains(i.Id) == true).ToList();
             if (tickets.Count == 0 || obj == null)
                 return false; 
             var flight = _mapper.Map<Flight>(obj);

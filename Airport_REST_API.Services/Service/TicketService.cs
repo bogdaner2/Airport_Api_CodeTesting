@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Airport_REST_API.DataAccess;
 using Airport_REST_API.DataAccess.Models;
@@ -45,7 +46,14 @@ namespace Airport_REST_API.Services.Service
             if (ticket != null)
             {
                 db.Tickets.Add(_mapper.Map<Ticket>(ticket));
-                db.Save();
+                try
+                {
+                    db.Save();
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
                 return true;
             }
             return false;

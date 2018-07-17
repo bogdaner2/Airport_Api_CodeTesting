@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Airport_REST_API.DataAccess;
 using Airport_REST_API.DataAccess.Models;
@@ -44,7 +45,7 @@ namespace Airport_REST_API.Services.Service
         public bool Add(CrewDTO obj)
         {
             var stewardesses = db.Stewardess.GetAll()
-                .Where(i => obj.StewardessesId.Contains(i.Id) == true).ToList();
+                .Where(i => obj.StewardessesId?.Contains(i.Id) == true).ToList();
             var pilot = db.Pilots.Get(obj.PilotId.Value);
             if (stewardesses.Count == 0 || pilot == null)
                 return false; 
@@ -52,14 +53,21 @@ namespace Airport_REST_API.Services.Service
             crew.Pilot = pilot;
             crew.Stewardesses = stewardesses;
             db.Crews.Add(crew);
-            db.Save();
+            try
+            {
+                db.Save();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
             return true;
         }
 
         public bool Update(int id, CrewDTO obj)
         {
             var stewardesses = db.Stewardess.GetAll()
-                .Where(i => obj.StewardessesId.Contains(i.Id) == true).ToList();
+                .Where(i => obj.StewardessesId?.Contains(i.Id) == true).ToList();
             var pilot = db.Pilots.Get(obj.PilotId.Value);
             if (stewardesses.Count == 0 || pilot == null)
                 return false; 
