@@ -45,7 +45,7 @@ namespace Airport_REST_API.Services.Service
         public bool Add(CrewDTO obj)
         {
             var stewardesses = db.Stewardess.GetAll()
-                .Where(i => obj.StewardessesId.Contains(i.Id) == true).ToList();
+                .Where(i => obj.StewardessesId?.Contains(i.Id) == true).ToList();
             var pilot = db.Pilots.Get(obj.PilotId.Value);
             if (stewardesses.Count == 0 || pilot == null)
                 return false; 
@@ -67,7 +67,7 @@ namespace Airport_REST_API.Services.Service
         public bool Update(int id, CrewDTO obj)
         {
             var stewardesses = db.Stewardess.GetAll()
-                .Where(i => obj.StewardessesId.Contains(i.Id) == true).ToList();
+                .Where(i => obj.StewardessesId?.Contains(i.Id) == true).ToList();
             var pilot = db.Pilots.Get(obj.PilotId.Value);
             if (stewardesses.Count == 0 || pilot == null)
                 return false; 

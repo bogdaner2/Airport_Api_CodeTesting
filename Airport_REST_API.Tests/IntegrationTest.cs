@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Generic;
 using System.Linq;
 using Airport_API_CodeTesting;
 using Airport_API_CodeTesting.Controllers;
@@ -23,7 +24,8 @@ namespace Airport_REST_API.Tests
         private IUnitOfWork uow;
         private AirportContext context;
         private IMapper _mapper;
-
+        private ICrewService crewSer;
+        private CrewController crewCon;
         [SetUp]
         public void StartUp()
         {
@@ -35,9 +37,19 @@ namespace Airport_REST_API.Tests
                 cfg.CreateMap<TicketDTO, Ticket>()
                 .ForMember(x => x.Id,opt => opt.Ignore());
                 cfg.CreateMap<Ticket, TicketDTO>();
+                cfg.CreateMap<CrewDTO, Crew>()
+                    .ForMember(i => i.Id, opt => opt.Ignore())
+                    .ForMember(i => i.Stewardesses, opt => opt.Ignore())
+                    .ForMember(i => i.Pilot, opt => opt.Ignore());
+                cfg.CreateMap<Crew, CrewDTO>()
+                    .ForMember(i => i.StewardessesId, opt => opt.MapFrom(m => m.Stewardesses.Select(s => s.Id)))
+                    .ForMember(i => i.PilotId, opt => opt.MapFrom(m => m.Pilot.Id));
+                cfg.CreateMap<Ticket, TicketDTO>();
             }).CreateMapper();
             uow = new UnitOfWork(context);
             service = new TicketService(uow,_mapper);
+            crewSer = new CrewService(uow, _mapper);
+            crewCon = new CrewController(crewSer);
             controller = new TicketController(service);
         }
         [Test]
@@ -52,7 +64,7 @@ namespace Airport_REST_API.Tests
         public void Get_Should_ReturnObject_When_IdIsCorrect()
         {
             //Act
-            var result = controller.Get(1) as OkObjectResult;
+            var result = controller.Get(2) as OkObjectResult;
             //Assert
             Assert.True(result.Value != null);
         }
@@ -132,18 +144,30 @@ namespace Airport_REST_API.Tests
             //Assert
             Assert.IsFalse(initialCount == afterCount);
         }
-
-
         [Test]
-        public void TestInner()
+        public void Add_Crew_With_NestedListOfStewardess_ReturnOk()
         {
-
+            //Arrange
+            var correctItem = new CrewDTO { PilotId = 1,StewardessesId = new List<int> { 1,2}};
+            //Act
+            var result = crewCon.Post(correctItem) as StatusCodeResult;
+            //Assert
+            Assert.AreEqual(result.StatusCode, 200);
+            //Reset
+            crewCon.Delete(context.Crews.Last().Id);
         }
         [Test]
-        public void TestRemoveInner()
+        public void Remove_Return500_When_CrewWithoutStewardesses()
         {
-
+            //Arrange
+            var correctItem = new CrewDTO { PilotId = 1 };
+            //Act
+            var result = crewCon.Put(1,correctItem) as StatusCodeResult;
+            //Assert
+            Assert.AreEqual(result.StatusCode, 500);
         }
+
+
         [Test]
         public void TestInnerListAdd()
         {
@@ -156,12 +180,11 @@ namespace Airport_REST_API.Tests
         }
 
 
-
         [Test]
         public void Update_Return_OkStatusCode()
         {
             var ticket = new TicketDTO {Id = 1 ,Number = "Test", Price = 1000};
-            var result = controller.Put(1,ticket);
+            var result = controller.Put(3,ticket);
             Assert.AreEqual(new StatusCodeResult(200).StatusCode,((StatusCodeResult)result).StatusCode);
         }
         [Test]

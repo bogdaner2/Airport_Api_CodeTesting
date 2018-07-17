@@ -40,7 +40,7 @@ namespace Airport_REST_API.Services.Service
 
         public bool Add(FlightDTO obj)
         {
-            var tickets = db.Tickets.GetAll().Where(i => obj.TicketsId.Contains(i.Id) == true).ToList();
+            var tickets = db.Tickets.GetAll().Where(i => obj.TicketsId?.Contains(i.Id) == true).ToList();
             if (tickets.Count == 0 || obj == null )
                 return false; 
             var flight = _mapper.Map<Flight>(obj);
@@ -59,7 +59,7 @@ namespace Airport_REST_API.Services.Service
 
         public bool Update(int id, FlightDTO obj)
         {
-            var tickets = db.Tickets.GetAll().Where(i => obj.TicketsId.Contains(i.Id) == true).ToList();
+            var tickets = db.Tickets.GetAll().Where(i => obj.TicketsId?.Contains(i.Id) == true).ToList();
             if (tickets.Count == 0 || obj == null)
                 return false; 
             var flight = _mapper.Map<Flight>(obj);
